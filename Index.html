@@ -1,0 +1,475 @@
+<!-- Created by C-Walk Sanju--><!--
+    Created by C-Walk Sanju.
+    Date Created: 5th March 2020
+    
+    Please don't copy without my permission.
+    Hope you like it...
+    
+--><!doctype html><html lang="en" dir="ltr"><head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tic Tac Toe Game</title>
+        <!--link rel="stylesheet" href="tictactoe.css"-->
+        <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+        <!--script src="jquery.min.js" charset="utf-8"></script-->
+         <link href="https://fonts.googleapis.com/css?family=Montserrat|Varela+Round|Poppins&amp;display=swap" rel="stylesheet">
+
+
+    <style type="text/css" id="dcoder_stylesheet">/* Created by C-Walk Sanju */
+
+html, body{
+    height: 100%;
+}
+
+body {
+    background: url("https://images.pexels.com/photos/326311/pexels-photo-326311.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.cont {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+}
+
+.page {
+    z-index: -1;
+    /* padding-top: 15px;
+    padding-left: 15px; */
+    background-color: rgba(0, 0, 0, 0.7);
+    height: 100%;
+    width: 100%;
+}
+
+p {
+    color: #FFF;
+    font-size: 1em;
+    font-family: 'Varela Round', sans-serif;
+}
+
+#navigator #list{
+    border-left: 3px solid red;
+    max-height:0;
+    overflow: hidden;
+    transition: max-height 1.5s ;
+}
+
+#navigator #list div{
+    text-align: right;
+    width: inherit;
+    padding: 20px;
+    font-size: 20px;
+    font-family: 'Lato', sans-serif;
+    color: #fff;
+    letter-spacing: 1px;
+    background-color: rgba(0, 0, 50, 0.7);
+}
+
+#navigator{
+    z-index: 3;
+    position: fixed;
+    transition: bottom 1.5s ;
+}
+
+#navigator p{
+    padding: 10px;
+    background-color: red;
+    border: 1px solid red;
+    border-radius: 10px;
+    padding-left: 5px;
+    width: auto;
+}
+
+
+#navigator #list div:active{
+    background-color: rgba(0, 0, 255, 0.7);
+}
+
+#reset {
+    font-size: 20px;
+    z-index: 3;
+    font-variant: small-caps;
+    position: fixed;
+    background-color: #F00;
+    border-radius: 20px;
+    color: #FFF;
+    padding: 10px;
+    font-family: 'Montserrat', sans-serif;
+    bottom: 10%;
+    right: 10%;
+    border: none;
+}
+
+#reset:hover {
+    background-color: #000;
+}
+
+.block{
+    position: absolute;
+    vertical-align: middle;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+}
+
+.cell{
+    display: flex;
+    margin: auto;
+    font-size: 4em;
+    color: #FFF;
+    padding: 10px;
+    position: absolute ;
+    /*border: 1px solid #000;*/
+    width: 20%;
+    height: 20%;
+}
+
+.cell-child{
+    margin: auto;
+}
+
+path {
+    stroke-width: 3px;
+    stroke-linecap: round;
+    stroke: white;
+}
+</style></head>
+    <body>
+        <div class="page">
+        </div>
+        <div class="cont">
+            <div id="reset">
+                Reset
+            </div>
+            <div id="navigator" onclick="$('#navigator').css('bottom', '10%'); $('#list').css('max-height', '500px'); ">
+            <p>Mode: <span>2 Player Mode</span></p>
+            <div id="list">
+                <div onclick="$('span').text('2 Player Mode'); $('#reset').trigger('click');">2 Player Mode</div>
+                <div onclick="$('span').text('Easy'); $('#reset').trigger('click'); $('#list').css('max-height', '0')">Easy</div>
+                <div onclick="$('span').text('Hard'); $('#reset').trigger('click');">Hard</div>
+            </div>
+            </div>
+            <div class="block">
+                <div class="cell">
+                </div>
+                <svg width="100%" height="100%"></svg>
+            </div>
+        </div>
+        <!--script src="tictactoe.js" charset="utf-8"></script-->
+    
+
+<script type="text/javascript" id="dcoder_script">// Created by C-Walk Sanju
+
+"use strict"
+Array.prototype.isflat = function(){
+    var arr = this;
+    return [0, 1].every(function(i){
+        return arr[i] != "#" && (arr[i] == arr[i+1]);
+    });
+};
+
+Array.prototype.count = function(elem){
+    let c=0;
+    for (let i of this){
+        if (i==elem){
+            c++;
+        }
+    }
+    return c;
+};
+
+var draw=false;
+var game = [];
+for (let i=0; i<3; i++){
+    var temp = [];
+    for (let j=0; j<3; j++){
+        temp.push("#");
+    }
+    game.push(temp);
+}
+
+/*----------------Validate----------------*/
+var still=true;
+function validate(turn, top, left){
+    let height = parseInt($(".cell").css("height"));
+    let width = parseInt($(".cell").css("width"));
+    if (still){
+    for (let i=0; i<3; i++){
+        if (game[i].isflat()){
+            $("svg").html($("svg").html()+`<path d='M20 ${top+(height/2)} L${20+((width+10)*3)} ${top+(height/2)}' class='ho'>`);
+
+            still = !still;
+        }
+    }}
+    if (still){
+        for (let i=0; i<3; i++){
+            var cas = [];
+            for (let j=0; j<3; j++){
+                cas.push(game[j][i]);
+            }
+            if (cas.isflat()){
+                $("svg").html($("svg").html()+`<path d='M${left+parseInt($(".cell").css("width"))/2+10} 10 L${left+parseInt($(".cell").css("width"))/2+10} ${(height+10+2)*3}' class='ho'>`);
+                still = !still;
+            }
+        }
+    }
+
+    if (still){
+        left = $('#1').position().left;
+        top = $("#1").position().top;
+        var cas1 = [game[0][0], game[1][1], game[2][2]];
+        var cas2 = [game[0][2], game[1][1], game[2][0]];
+        if (cas1.isflat()){
+            $("svg").html($("svg").html() + `<path d="M${left} ${top} L${left+(width+12)*3} ${top+(height+12)*3}" class="ho">`);
+            still = false;
+        } else if (cas2.isflat()){
+            $("svg").html($("svg").html() + `<path d="M${left+((parseInt($('.cell').css('width'))+10)*3)+6+10} ${top} L${left+(parseInt($('.cell').css('width'))/3)} ${top+((parseInt($('.cell').css('height'))+10+2)*3)+10}" class="ho">`);
+            still = false;
+        }
+    }
+    let draw = false;
+    if (still && game.every(function(elem){
+        return !(elem.toString().includes("#"));
+    })){
+        still = !still;
+        draw = true;
+    }
+
+    if (!still){
+        if (window.navigator && window.navigator.vibrate)
+        {navigator.vibrate(60);}
+        still = false;
+        if ($("span").text() != "2 Player Mode" && !draw)
+            if (!turn){
+                alert("You won!! It was just a computer after all");
+            } else {
+                alert("You lost! But don't give up yet. Click on Reset and start again.");
+            }
+         else if (!draw){
+            alert((!turn?"X":"O") + " Wins!!");
+        } else {
+            alert("It's a draw.")
+        }
+    }
+}
+
+
+/*-----------Make the move-----------*/
+
+
+function makeMove(str){
+    for (let i=0; i<3; i++){
+            if (game[i].count("#")==1 && game[i].count(str)==2){
+                $(`#${(3*i)+game[i].indexOf("#")+1}`).trigger("click");
+                return false;
+            }
+                var cas = [game[0][i], game[1][i], game[2][i]];
+                if (cas.count("#")==1 && cas.count(str)==2){
+                    $(`#${(3*cas.indexOf("#"))+i+1}`).trigger("click");
+                    return false;
+                }
+            }
+            var case1 = [game[0][0], game[1][1], game[2][2]];
+            var case2 = [game[0][2], game[1][1], game[2][0]];
+            if (case1.count("#")==1 && case1.count(str)==2){
+                $(`#${1+(4*case1.indexOf("#"))}`).trigger("click");
+                return false;
+            } else if (case2.count("#")==1 && case2.count(str)==2){
+                $(`#${3+(2*case2.indexOf("#"))}`).trigger("click");
+                return false;
+            }
+        return true;
+}
+
+
+/*---------Think like a pro----------*/
+
+function Ai(mode){
+    if (mode=="Easy"){
+        let rand = Math.floor((Math.random()*9))+1;
+        while (Boolean($("#"+rand).text())){
+            rand = Math.floor((Math.random()*9))+1;
+        }
+        $("#"+rand).trigger("click");
+    } else {
+        let huh=true;
+
+
+/*-------Win if there is scope-------*/
+
+        huh = makeMove("O");
+
+/*-------Prevent from winning--------*/
+
+        if (huh){
+            huh = makeMove("X");
+        }
+
+/*------Make an intelligent move-----*/
+        if (huh){
+            if ($("#5").text() === ""){
+                $("#5").trigger("click");
+                huh = false;
+            }
+        }
+
+        if (huh){
+            let perms = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+            let perm = perms[Math.floor(Math.random()*6)];
+            for (let i of perm){
+                if (game[i].count("X")===0){
+                    let rand = [0, 2][Math.floor(Math.random()*2)];
+                    while (game[i][rand] != "#"){
+                        rand = [0, 2][Math.floor(Math.random()*2)];
+                    }
+                    $(`#${(3*i)+rand+1}`).trigger("click");
+                    huh = !huh;
+                    break;
+                }
+                let cas = [game[0][i], game[1][i], game[2][i]];
+                if (cas.count("X") == "O"){
+                    let rand = Math.floor(Math.random()*3);
+                    while (game[rand][i] != "#"){
+                        rand = Math.floor(Math.random()*3);
+                    }
+                    $(`#${(3*rand)+i+1}`).trigger("click");
+                    huh = !huh;
+                    break;
+                }
+            }
+            if (huh){
+                let case1 = [game[0][0], game[1][1], game[2][2]];
+                let case2 = [game[0][2], game[1][1], game[2][0]];
+                if (case1.count("X") == case2.count("X") && case1.count("X") === 0){
+                    let cases = [case1,
+                                 case2];
+                    let ran = Math.floor(Math.random()*2);
+                    let rand = Math.floor(Math.random()*2);
+                    while (cases[ran][rand] != "#"){
+                        rand = Math.floor(Math.random()*2);
+                    }
+                    if (ran == 0){
+                        $(`#${1+(4*rand)}`).trigger("click");
+                    } else {
+                        $(`#${3+(2*rand)}`).trigger("click");
+                    }
+                    huh = !huh;
+                } else if (case1.count("X") == 0){
+                    let rand = Math.floor(Math.random()*2);
+                    while (case1[rand] != "#"){
+                        rand = Math.floor(Math.random()*2);
+                    }
+                    $(`#${1+(4*rand)}`).trigger("click");
+                } else if (case2.count("X") == 0){
+                    let rand = Math.floor(Math.random()*2);
+                    while (case2[rand] != "#"){
+                        rand = Math.floor(Math.random()*2);
+                    }
+                    $(`#${3+(2*rand)}`).trigger("click");
+                } else {
+                    Ai("Easy");
+                }
+            }
+        }
+    }
+}
+
+
+/*+-+-+-+-+--+-+-+-+-+-+-+-+-+-+-+--+*/
+
+$(function(){
+    $("#navigator").css({
+
+    "right": `${((parseInt($(".page").css("width"))+parseInt($("#reset").css("right"))+parseInt($("#reset").outerWidth())+10)/2)-($("#navigator").outerWidth()/2)}px`,
+
+    "bottom": `${parseFloat($("#reset").css("bottom"))-14}px`})
+
+    var left = 0;
+    var top = 0, id = 1, style, x = "px";
+    for (let i=0; i<3; i++){
+        left = 0;
+        for (let j=0; j<3; j++){
+            if (id%3!=0 && id<7){
+                style = "border-right: 2px solid white; border-bottom: 2px solid white";
+            } else if(id%3!=0){
+                style = "border-right: 2px solid white;";
+            } else if (id < 7){
+                style = "border-bottom: 2px solid white";
+            } else {
+                style= ""
+            }
+            if (left==0){  x = "%";} else { x = "px";}
+            $(".block").html($(".block").html() + `<div class='cell' style='left: ${left}${x}; top: ${top}px; ${style}' id=${id}><div class='cell-child' id=${id}></div></div>
+
+            `)
+            left += parseFloat($(".cell").css("width"))+20;
+            id++;
+            $(".cell-child").text("");
+        }
+        top += parseFloat($(".cell").css("height"))+20;
+    }
+
+    var prev = "2 Player Mode";
+    var turn = true, top, left, ai=true;
+
+    $("#reset").on("click", function(){
+        $('.cell-child').text("");
+        $("svg").html("");
+        turn = true;
+        ai = true;
+        still = true;
+        $(".cell").on("click", function(event){
+            clicked(event);
+        })
+    });
+
+
+    $('.block').on("click", function(){
+        $('#navigator').css('bottom', `${parseFloat($("#reset").css("bottom"))-14}px`);
+        $("#list").css("max-height", "0");
+    })
+
+
+    function clicked(event){
+
+        if ($("#"+event.target.id).text() != "X" && $("#"+event.target.id).text() != "O" && still){
+                $("#"+event.target.id).children().eq(0).text(turn?"X":"O");
+            top = $("#"+event.target.id).position().top;
+            left = $("#"+event.target.id).position().left;
+            turn = !turn;
+            for (let i=0; i<3; i++){
+                for (let j=0; j<3; j++){
+                    game[i][j] = $("#"+((i*3)+j+1)).text() || "#";
+                }
+            }
+            validate(turn, top, left);
+            if ($("span").text()!="2 Player Mode"){ai = !ai;}
+
+            if (!ai && still) Ai($("span").text());
+        }
+    }
+
+    $(document).ready(function(){
+        alert(`
+Just a few instructions here:
+1. If the grid looks deformed, I can surely say that your keyboard was on before you ran the code. Just run the code again and everything will be fine.
+2. You can change the mode by clicking the mode button.
+3. The menu that opens on clicking the Mode button is not as I expected. So you have to click anywhere outside the menu to close it.
+4. You can click on reset to start over again.
+
+Code Author | C-Walk Sanju
+Soon ill publish this app in playstore.
+Have a good Day❤️ `)
+    })
+
+    $(".cell").on("click", function(event){
+        clicked(event)
+    })
+
+})
+</script></body></html>
